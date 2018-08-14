@@ -15,16 +15,16 @@ const AuthModel=mongoose.model('Auth')
 const InviteModel=mongoose.model('Invite')
 
 var  hbs = require('nodemailer-express-handlebars'),
-  email = 'optrial01@gmail.com',
-  pass =  'advanced4321'
+  email = 'mailer.421@gmail.com',
+  pass =  'random@12345'
   nodemailer = require('nodemailer');
 
 var smtpTransport = nodemailer.createTransport({
   service:'Gmail'||'gmail',
   secure:true,
   auth: {
-    user: 'optrial01@gmail.com',
-    pass: 'advanced4321'
+    user: 'mailer.421@gmail.com',
+    pass: 'random@12345'
   }
 });
 
@@ -487,15 +487,15 @@ let forgotPassword=(req,res)=>{
           });
         },
         function(token, user, done) {
-          var data = {
-            to: user.email,
-            from: email,
-            template: 'forgot-password',
-            subject: 'Password RESET!',
-            context: {
-              url: 'http://localhost:4200/reset-password?token=' + token,
-              name: user.firstName
-            }
+			  var data = {
+				to: user.email,
+				from: email,
+				template: 'forgot-password',
+				subject: 'Password RESET!',
+				context: {
+				  url: 'http://localhost:4200/reset-password?token=' + token,
+				  name: user.firstName
+				}
           };
     
           smtpTransport.sendMail(data, function(err) {
@@ -616,20 +616,23 @@ let sendInvites=(req,res)=>{
                         })
                 }
                   
-                try{    process();
-                    async function process(){
+                try{    process(); let i=1;
+                    function process(){
                         for(let x of users){
-                            await generateToken(x)
+                             generateToken(x)
                             .then(saveToken)
                             .then(sendMail)
                             .then((resolve)=>{
                                 logger.info('Invite sent'+resolve,'userController:sendInvites:chain()',10)
                             }).catch((err)=>{
                                 logger.info('Invite not sent'+err,'userController:sendInvites:chain()',10)
-                            })    
+                            }) 
+                            i++;   
                         }
-                        await logger.info('invited successfully','userController:sendInvites:processAndSend()',10);
-                        await resolve({m:'true'})
+                        if(i==users.length){
+                        logger.info('invited successfully','userController:sendInvites:processAndSend()',10);
+                        resolve({m:'true'})
+                        }
                     }
 
                 }catch(err){
